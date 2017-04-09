@@ -10,14 +10,17 @@ public class Motor : MonoBehaviour {
     private float maxMotorTorque;
     private float maxRmp;
     private float appliedTorque = 0;
+    private string motorName;
 
     private void Start()
     {
-        wheel = gameObject.GetComponent<WheelCollider>();
+        
     }
 
-    public void Init(float maxRpm, float maxTorque)
+    public void Init(float maxRpm, float maxTorque, string name)
     {
+        wheel = gameObject.GetComponent<WheelCollider>();
+        motorName = name;
         maxMotorTorque = maxTorque;
         wheel.ConfigureVehicleSubsteps(maxRpm, 2, 2);
     } 

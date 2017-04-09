@@ -15,6 +15,7 @@ public class Lidar : MonoBehaviour
     private List<GameObject> _beams;
     private float _first_beam;
     public bool render_beams;
+    public Material beamColor;
     
     // Use this for initialization
     void Start()
@@ -39,6 +40,7 @@ public class Lidar : MonoBehaviour
         newBeam.GetComponent<LineRenderer>().numPositions = 2;
         newBeam.GetComponent<LineRenderer>().startWidth = 0.005f;
         newBeam.GetComponent<LineRenderer>().endWidth = 0.005f;
+        newBeam.GetComponent<LineRenderer>().material = beamColor;
         return newBeam;
     }
 
@@ -58,7 +60,8 @@ public class Lidar : MonoBehaviour
             Vector3 beam_dir = Quaternion.AngleAxis(_first_beam + (i * _step_deg), transform.up) * gameObject.transform.forward;
             Ray ray = new Ray(_lidar_center, beam_dir);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, range_m))
+            int maskToIgnorePerspexLayer = ~(1 << 8);
+            if (Physics.Raycast(ray, out hit, range_m, maskToIgnorePerspexLayer))
             {
                 _scan_data.Add(hit.distance);
                 if (render_beams)

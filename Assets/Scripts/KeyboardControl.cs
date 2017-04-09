@@ -15,8 +15,8 @@ public class KeyboardControl : MonoBehaviour {
     void Start () {
         left =  wheelLeft.GetComponent<Motor>();
         right = wheelRight.GetComponent<Motor>();
-        left.Init(maxRpm, maxTorque);
-        right.Init(maxRpm, maxTorque);
+        left.Init(maxRpm, maxTorque, "left");
+        right.Init(maxRpm, maxTorque, "right");
     }
 	
 	// Update is called once per frame
