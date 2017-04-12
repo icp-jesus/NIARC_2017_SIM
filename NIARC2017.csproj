@@ -79,6 +79,7 @@
     <Compile Include="Assets\Scripts\KeyboardControl.cs" />
     <Compile Include="Assets\Scripts\Lidar\Lidar.cs" />
     <Compile Include="Assets\Scripts\Motor.cs" />
+    <Compile Include="Assets\Scripts\Path.cs" />
     <Compile Include="Assets\Scripts\Teleporter.cs" />
     <Compile Include="Assets\Scripts\UltraSonic.cs" />
   </ItemGroup>
