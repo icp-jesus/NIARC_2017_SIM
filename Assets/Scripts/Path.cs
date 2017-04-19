@@ -14,6 +14,7 @@ public static class ListExtentionMethod
     }
 }
 
+
 public class Path : MonoBehaviour {
 
     public List<GameObject> waypoints;
@@ -27,6 +28,22 @@ public class Path : MonoBehaviour {
         SpawnPath();
 	}
 	
+    public List<Vector3> PathPoints
+    {
+        get
+        {
+            return pathPoints;
+        }
+    }
+
+    public List<GameObject> RenderPoints
+    {
+        get
+        {
+            return renderPoints;
+        }
+    }
+
     void SpawnPath()
     {
         renderPoints = new List<GameObject>();
