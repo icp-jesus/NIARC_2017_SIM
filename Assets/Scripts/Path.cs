@@ -50,10 +50,21 @@ public class Path : MonoBehaviour {
         foreach(Vector3 point in pathPoints)
         {
             GameObject newPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            newPoint.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+            newPoint.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
             newPoint.transform.position = point;
             Destroy(newPoint.GetComponent<SphereCollider>());
             renderPoints.Add(newPoint);
+        }
+    }
+
+    private int leadPointIdx = 0;
+    public void MagnifyLeadPoint(int pointIdx)
+    {
+        if(pointIdx != leadPointIdx)
+        {
+            renderPoints[leadPointIdx].transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+            renderPoints[pointIdx].transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+            leadPointIdx = pointIdx;
         }
     }
 
@@ -70,10 +81,16 @@ public class Path : MonoBehaviour {
                 0.0f, 
                 pathIncrement*Mathf.Sin(theta));
             pathPoints.Add(waypoints[i].transform.position);
-            while (distToNext(pathPoints.LastElement(), waypoints[i+1].transform.position) > (pathIncrement/2.0f))
+            int devisions = (int)Mathf.Floor(distToNext(pathPoints.LastElement(), waypoints[i + 1].transform.position) / pathIncrement);
+            for(int j=0; j < devisions; j++)
             {
                 pathPoints.Add(pathPoints.LastElement() + step);
             }
+            /*
+            while (distToNext(pathPoints.LastElement(), waypoints[i+1].transform.position) > (pathIncrement/2.0f))
+            {
+                pathPoints.Add(pathPoints.LastElement() + step);
+            }*/
         }
         SpawnPath();
     }

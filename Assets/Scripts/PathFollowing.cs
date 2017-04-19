@@ -11,11 +11,12 @@ public class PathFollowing : MonoBehaviour {
     public float speedFactor;
     public Material highlight;
     private List<int> breadCrumbIndexes = new List<int>();
-    private int cnt = 1;
     private Transform robot;
+    public bool renderTowRope = false;
+    private GameObject towRope;
 
-	// Use this for initialization
-	void Start() { 
+    // Use this for initialization
+    void Start() { 
         robot = gameObject.GetComponentInParent<Transform>();
         GameObject difDrive = GameObject.Find("DifferentialDrive");
         int minLookAheadincrements = (int)Mathf.Ceil(difDrive.GetComponent<DifferentialDrive>().MaxForwardVelocity * deltaTime / path.pathIncrement);
@@ -23,10 +24,14 @@ public class PathFollowing : MonoBehaviour {
         for (int i = 0; i < breadCrumbCount; i++) { breadCrumbIndexes.Add(i); }
         Time.fixedDeltaTime = deltaTime;
 
-        //Vector3 v1 = new Vector3(1.0f, 0.0f, 0.0f);
-        //Vector3 v2 = new Vector3(1.0f, 0.0f, 1.0f);
-        //Debug.LogError("Theta: " + findDeltaTheta(v1, v2));
-        //Debug.LogError("Theta: " + findDeltaTheta(v2, v1));
+        //This is the line representing the tow rope
+        towRope = new GameObject();
+        towRope.AddComponent<LineRenderer>();
+        towRope.GetComponent<LineRenderer>().numPositions = 2;
+        towRope.GetComponent<LineRenderer>().startWidth = 0.005f;
+        towRope.GetComponent<LineRenderer>().endWidth = 0.005f;
+        towRope.GetComponent<LineRenderer>().SetPosition(0, gameObject.transform.position);
+        towRope.GetComponent<LineRenderer>().SetPosition(1, gameObject.transform.position);
 
     }
 	
@@ -57,8 +62,21 @@ public class PathFollowing : MonoBehaviour {
         TurnCommand = errorFactor * deltaTheta;
         //TurnCommand = errorFactor * deviationFromPath;
         SpeedCommand = speedFactor * pathCurvature;
-    }
 
+        path.MagnifyLeadPoint(breadCrumbIndexes.LastElement());
+
+        if (renderTowRope)
+        {
+            towRope.GetComponent<LineRenderer>().SetPosition(0, gameObject.transform.position);
+            towRope.GetComponent<LineRenderer>().SetPosition(1, path.PathPoints[breadCrumbIndexes.LastElement()]);
+        }
+        else
+        {
+            towRope.GetComponent<LineRenderer>().SetPosition(0, gameObject.transform.position);
+            towRope.GetComponent<LineRenderer>().SetPosition(1, gameObject.transform.position);
+        }
+    }
+    /*
     private float FindDeviationFromPath()
     {
         Vector3 closestPathPointInLocalSpace = WorldToLocal(path.PathPoints[breadCrumbIndexes[0]]);
@@ -71,36 +89,17 @@ public class PathFollowing : MonoBehaviour {
         ang = ang < 180 ? ang : 360 - ang;
         return ang;
     }
-
+    */
     private float findDeltaTheta()
     {
-        //Vector3 vectFromBotToBreadCrumb = path.PathPoints.LastElement() - robot.transform.position;
-        //GameObject closest = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        //closest.transform.position = path.PathPoints[breadCrumbIndexes.LastElement()] + new Vector3(0.0f, 0.2f, 0.0f);
-        //closest.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-        //closest.GetComponent<Renderer>().material = highlight;
         Vector3 goal = path.PathPoints[breadCrumbIndexes.LastElement()];
         float atan = Mathf.Atan2((goal.x - robot.transform.position.x), (goal.z - robot.transform.position.z));
-        //atan = Mathf.Abs(atan);
         float dTheta = atan - (robot.transform.eulerAngles.y * Mathf.Deg2Rad);
-        //Debug.Log("dTheta1: " + dTheta * Mathf.Rad2Deg);
         float sin_dTheta = Mathf.Sin(dTheta);
         float cos_dTheta = Mathf.Cos(dTheta);
         dTheta = Mathf.Atan2(sin_dTheta, cos_dTheta);
-        //Debug.Log("Robot: " + robot.transform.eulerAngles.y);
-        //Debug.Log("Goal: " + goal);
-
         
-        cnt++;
-        if (cnt % 10 == -1) {
-            Debug.Log("gx: " + goal.x + ", gz: " + goal.z + ", rx: " + robot.transform.position.x + ", rz: " + robot.transform.position.z);
-            Debug.Log("Heading: " + robot.transform.eulerAngles.y);
-            Debug.Log("AngToG: " + atan*Mathf.Rad2Deg);
-            Debug.Log("dTheta2: " + dTheta * Mathf.Rad2Deg);
-
-        }
         return dTheta;
-        //return findDeltaTheta(robot.forward, vectFromBotToBreadCrumb);
     }
 
     // This is NOT curvature in the strictest sense. It is the size of the offset of the mid-point of the
